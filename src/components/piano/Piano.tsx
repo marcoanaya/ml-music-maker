@@ -6,19 +6,18 @@ import { Key } from './Key';
 import { instruments, Instrument } from "../audio/constants";
 import './piano.css';
 
-
-export default function Piano() {
-  const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null);
-  const [notesPlaying, setNotesPlaying] = useState<OrderedMap<Key, boolean> | null>(null);
+export default function Piano({
+  audioPlayer,
+  setKeysSelected,
+}: PianoProps) {
+  const [notesToPlaying, setNotesToPlaying] = useState<OrderedMap<Key, boolean> | null>(null);
   const [shortcutToKeyMap, setShortcutToKeyMap] = useState<Map<string, Key> | null>(null);
   const [instrument, setInstrument] = useState<Instrument>("piano");
 
   useEffect(() => {
     const keys = Key.getKeysInBetween("C1", "B6")
     setShortcutToKeyMap(Key.addShortcuts(keys));
-    setNotesPlaying(OrderedMap(keys.map((k) => [k, false])));
-
-    new AudioPlayer(setAudioPlayer);    
+    setNotesToPlaying(OrderedMap(keys.map((k) => [k, false]))); 
   }, [])
 
   useEffect(() => {
@@ -39,12 +38,14 @@ export default function Piano() {
   }, [shortcutToKeyMap, audioPlayer, instrument])
   
   const onDownHandler = (key: Key) => {
-    setNotesPlaying((prev) => prev!.set(key, true));
+    setNotesToPlaying((prev) => prev!.set(key, true));
+    setKeysSelected((prev) => [...prev, key]);
     audioPlayer?.startNote(key, instrument);
   }
 
   const onUpHandler = (key: Key) => {
-    setNotesPlaying((prev) => prev!.set(key, false));
+    setNotesToPlaying((prev) => prev!.set(key, false));
+    setKeysSelected((prev) => prev.filter((k) => Key.compare(k, key)));
     audioPlayer?.stopNote(key, instrument);
   }
 
@@ -59,6 +60,8 @@ export default function Piano() {
           onMouseDown={() => onDownHandler(key)}
           onMouseUp={() => onUpHandler(key)}
           onMouseLeave={() => onUpHandler(key)}
+          onTouchStart={() => onDownHandler(key)}
+          onTouchEnd={() => onUpHandler(key)}
         >
           <span className="piano-text">{isPlaying && key.toString()}<br/>{key.shortcut}</span>
         </button>
@@ -82,12 +85,15 @@ export default function Piano() {
       </select>
     <div className="piano-container">
       {
-        (audioPlayer && notesPlaying) 
-        ? 
-          Array.from(notesPlaying, ([key, isPlaying]) => renderKey(key, isPlaying))
-        
+        (audioPlayer && notesToPlaying) 
+        ? Array.from(notesToPlaying, ([key, isPlaying]) => renderKey(key, isPlaying))
         : "LOADING"
       }
     </div></div>
   )
+}
+
+interface PianoProps {
+  audioPlayer: AudioPlayer | null;
+  setKeysSelected: React.Dispatch<React.SetStateAction<Key[]>>
 }
