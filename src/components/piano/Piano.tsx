@@ -34,11 +34,7 @@ export default function Piano({
     <div>
 
     <div className="piano-container">
-      {
-        (audioPlayer && keyToPlaying) 
-        ? Array.from(keyToPlaying, ([key, isPlaying]) => renderKey(key, isPlaying))
-        : "LOADING"
-      }
+      {Array.from(keyToPlaying, ([key, isPlaying]) => renderKey(key, isPlaying))}
     </div></div>
   )
 }

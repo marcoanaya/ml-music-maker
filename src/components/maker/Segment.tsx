@@ -4,10 +4,20 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import "./maker.css";
 
+const WIDTH = 50;
+
+const getNum = (t: any, v: ('x' | 'y')) => (Number(t.getAttribute(`data-${v}`)) || 0);
+const transform = (t: any, x: number, y: number) => {
+  t.style.transform = `translate(${x}px, ${y}px)`;
+  t.setAttribute('data-x', x)
+  t.setAttribute('data-y', y)
+}
 export default function Segment({
   selected,
-  handleSelect,
+  handleChangeSegment,
   children,
+  id,
+  span: [start, length],
 }: SegmentProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -17,66 +27,47 @@ export default function Segment({
         edges: {  right: true, left: true },
       
         onmove ({ target, rect, deltaRect}) {
-          const x = (parseFloat(target.getAttribute('data-x')) || 0) + deltaRect.left;
-          const y = (parseFloat(target.getAttribute('data-y')) || 0) + deltaRect.top;
-  
-          // update the element's style
-          target.style.width = rect.width + 'px'
-          target.style.height = rect.height + 'px'
-  
-          target.style.transform = `translate(${x}px, ${y}px)`;
-  
-          target.setAttribute('data-x', x)
-          target.setAttribute('data-y', y)
-        }
-        ,
+          const x = getNum(target, 'x') + deltaRect.left;
+          const y = getNum(target, 'y') + deltaRect.top;
+          ['height', 'width'].forEach((x) => target.style[x] = `${rect[x]}px`);
+          transform(target, x, y);
+
+        },
+        onend (event) {
+          console.log(`${event.pageX} - ${event.x0} + ${event.pageY} - ${event.y0}`)
+          console.log(event.rect.left)
+
+        },
         modifiers: [
-          // keep the edges inside the parent
           interact.modifiers.restrictEdges({ outer: 'parent' }),
     
           interact.modifiers.restrictSize({
-            min: { width: 30, height: 30 }
+            min: { width: WIDTH, height: WIDTH }
           }),
           interact.modifiers.snap({
-            targets: [ interact.snappers.grid({ x: 30, y: 30 }) ],
+            targets: [ interact.snappers.grid({ x: WIDTH, y: WIDTH }) ],
             range: Infinity,
-            relativePoints: [ { x: 0, y: 0 } ]
+            offset: 'parent',
           }),
         ],
-    
-        inertia: true
       })
       .draggable({
-        // inertia: true,
+        onmove ({ target, dx, dy }) {
+          const x = getNum(target, 'x') + dx
+          const y = getNum(target, 'y') + dy
+          transform(target, x, y);
+        },
+        onend (event) {
+          console.log(`${event.x0} + ${event.y0}`)
+        },
         modifiers: [
           interact.modifiers.snap({
-            targets: [ interact.snappers.grid({ x: 30, y: 30 }) ],
+            targets: [ interact.snappers.grid({ x: WIDTH, y: WIDTH }) ],
             range: Infinity,
-            relativePoints: [ { x: 0, y: 0 } ]
+            offset: 'self',
           }),
           interact.modifiers.restrictRect({ restriction: 'parent' })
         ],
-        listeners: {
-          // call this function on every dragmove event
-          move ({ target, dx, dy }) {
-            // keep the dragged position in the data-x/data-y attributes
-            const x = (Number(target.getAttribute('data-x')) || 0) + dx
-            const y = (Number(target.getAttribute('data-y')) || 0) + dy
-          
-            // translate the element
-            target.style.transform = `translate(${x}px, ${y}px)`;
-          
-            // update the posiion attributes
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-          },
-
-          // call this function on every dragend event
-          end (event) {
-            const textEl = event.target.querySelector('p')
-            textEl && (textEl.textContent = `${event.pageX} - ${event.x0} + ${event.pageY} - ${event.y0}`)
-          }
-        }
       })
 
   }, [])
@@ -84,7 +75,12 @@ export default function Segment({
   return (
     <div 
       ref={ref} 
-      style={{backgroundColor:"red"}}
+      className="selection"
+      style={{
+        backgroundColor:"red",
+        width: length * WIDTH,
+        height: WIDTH,
+      }}
       onClick={() => console.log("EHLJLKJLFKJLKJ")}
     >{children}</div>
   )
@@ -92,6 +88,8 @@ export default function Segment({
 
 interface SegmentProps {
   selected: number;
-  handleSelect: (i: number) => void;
+  span: [number, number];
+  handleChangeSegment: (id: number, span: [number, number]) => void;
   children: React.ReactChild;
+  id: number;
 }

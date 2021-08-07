@@ -1,7 +1,5 @@
-import { List } from "immutable";
+import { Instrument, Track } from "../../global";
 import AudioPlayer from "../audio/AudioPlayer";
-import { Instrument } from "../audio/constants";
-import { Key } from "../piano/Key";
 import "./maker.css";
 import Segment from "./Segment";
 
@@ -10,7 +8,7 @@ export default function Maker({
   track,
   instrument,
   selected,
-  handleSelect,
+  handleChangeSegment,
 }: MakerProps) {
 
   return (
@@ -18,28 +16,31 @@ export default function Maker({
       <button onClick={() => audioPlayer?.startTrack(track, instrument)}>play</button>
       <button onClick={() => audioPlayer?.stopTrack()}>stop</button>      
       <div className="label-wrapper">
-        {Array(track.size / 4).fill(0).map((_, i) => (
+        {Array(20).fill(0).map((_, i) => (
           <div className="label"
             key={i}
           >{i}</div>
         ))}
       </div>
-      <div className="selection-wrapper">
-        {track.map((keys, i) => (
-          <button className="selection" style={i===selected? {backgroundColor: "darkcyan"}: {}}
-            onClick={() => handleSelect(i)}
-            key={i}
-          >{keys.map((k) => k.toString())}</button>
+      {/* <div className="selection-wrapper"> */}
+        {track.map(({ span, keys }, i) => (
+            <Segment 
+              key={i}
+              span={span}
+              id={i}
+              selected={selected}
+              handleChangeSegment={handleChangeSegment}
+            >{keys.map((k) => k.toString()).toString()}</Segment>
         ))}
-      </div>
+      {/* </div> */}
     </div>
   )
 }
 
 interface MakerProps {
   audioPlayer: AudioPlayer | null;
-  track: List<Key[]>;
+  track: Track;
   instrument: Instrument;
   selected: number;
-  handleSelect: (i: number) => void;
+  handleChangeSegment: (id: number, span: [number, number]) => void;
 }

@@ -1,5 +1,6 @@
 import * as Tone from "tone";
-import { samples, instruments, Instrument } from "./constants";
+import { Instrument } from "../../global";
+import { samples, instruments } from "./constants";
 
 const MINIFY = true;
 

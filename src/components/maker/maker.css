@@ -1,11 +1,12 @@
 :root {
-  --selection-width: 80px;
+  --selection-width: 50px;
 }
 
 .maker-container {
   max-width: 1141px;
-  display:flex;
-  flex-wrap: wrap;
+  width: 2000px;
+  position: relative;
+  height: 400px;
   width: 100%;
   justify-content: right;
   background-color: white;
@@ -26,10 +27,12 @@
 }
 
 .selection {
-  height: 100px;
-  width: var(--selection-width);
+  display: inline-block;
+  /* height: 100px;
+  width: var(--selection-width); */
   /* border: inset; */
   border-color: white;
   background-color: #444;
+  position: absolute;
 
 }

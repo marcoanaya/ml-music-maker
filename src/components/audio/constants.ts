@@ -1,3 +1,5 @@
+import { Instrument } from "../../global";
+
 export const samples = {
   "bass-electric": {
     "A#2": "As2.mp3",
@@ -518,7 +520,6 @@ export const samples = {
 
   }
 }
-export declare type Instrument = keyof typeof samples;
 
 export const instruments = Object.keys(samples) as Instrument[];
 
