@@ -1,3 +1,5 @@
+import { accidentalShortcuts, naturalShortcuts } from './shortcuts';
+
 const notes = [
   'C',
   'C#',
@@ -60,7 +62,6 @@ export class Key {
   static getKeysInBetween(start: Key.Str, end: Key.Str): Key[] {
     let startKey = new Key(start);
     const endKey = new Key(end);
-
     if (Key.compare(startKey, endKey) > 0) return [];
 
     const keys = [startKey];
@@ -68,103 +69,10 @@ export class Key {
       startKey = startKey.getNextKey();
       keys.push(startKey);
     }
-
     return keys;
   }
 
   static addShortcuts(keys: Key[]): Map<string, Key> {
-    const accidentalShortcuts = [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '0',
-      '-',
-      '=',
-      'a',
-      's',
-      'd',
-      'f',
-      'g',
-      'h',
-      'j',
-      'k',
-      'l',
-      ';',
-      "'",
-      /*'!',*/ '@',
-      '#',
-      '$',
-      '%',
-      '^',
-      '&',
-      '*',
-      '(',
-      ')',
-      '_',
-      '+',
-      'A',
-      'S',
-      'D',
-      'F',
-      'G',
-      'H',
-      'J',
-      'K',
-      'L',
-      ':',
-    ];
-    const naturalShortcuts = [
-      'q',
-      'w',
-      'e',
-      'r',
-      't',
-      'y',
-      'u',
-      'i',
-      'o',
-      'p',
-      '[',
-      ']',
-      'z',
-      'x',
-      'c',
-      'v',
-      'b',
-      'n',
-      'm',
-      ',',
-      '.',
-      '/',
-      'Q',
-      'W',
-      'E',
-      'R',
-      'T',
-      'Y',
-      'U',
-      'I',
-      'O',
-      'P',
-      '{',
-      '}',
-      'Z',
-      'X',
-      'C',
-      'V',
-      'B',
-      'N',
-      'M',
-      '<',
-      '>',
-      '?',
-    ];
     let [i, j, k] = [0, 0, 0];
     let naturalCount = 0;
     const shortcutToKeyMap = new Map();

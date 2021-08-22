@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Tone from 'tone';
-import { Instrument, Track } from '../../global';
+import { Instrument } from '../../global';
+import { Track } from '../maker/Track';
 import { Key } from '../piano/Key';
 import { Sampler } from './Sampler';
 
@@ -24,11 +25,11 @@ export default class AudioPlayer {
 
   startTrack(track: Track, instrument: Instrument): void {
     console.log(track);
-    const events = track
+    const events = track.segments
       .toArray()
       .map(({ span: [s, e], keys }) => [
         [s / 2, e / 2],
-        keys.map((k) => k.toString()),
+        keys.map((k: Key) => k.toString()),
       ]);
     console.log(events);
     let i = 0;

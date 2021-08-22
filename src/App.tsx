@@ -1,24 +1,23 @@
-import { List, OrderedMap } from 'immutable';
+import { OrderedMap } from 'immutable';
 import React, { useRef, ReactElement, useEffect, useState } from 'react';
 import './App.css';
 import AudioPlayer from './components/audio/AudioPlayer';
 import { instruments } from './components/audio/constants';
 import Maker from './components/maker/Maker';
+import { Track } from './components/maker/Track';
 import { Key } from './components/piano/Key';
 import Piano from './components/piano/Piano';
-import { Instrument, Track } from './global';
+import { Instrument } from './global';
 
 export default function App(): ReactElement {
   const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null);
   const [keyToPlaying, setKeyToPlaying] = useState<OrderedMap<Key, boolean>>(
     OrderedMap<Key, boolean>(),
   );
-  const [shortcutToKeyMap, setShortcutToKeyMap] = useState<Map<
-    string,
-    Key
-  > | null>(null);
-  const [selected, setSelected] = useState(0);
-  const [track, setTrack] = useState<Track>(List());
+  const [shortcutToKeyMap, setShortcutToKeyMap] = useState<Map<string, Key>>(
+    new Map(),
+  );
+  const [track, setTrack] = useState<Track>(new Track());
   const [instrument, setInstrument] = useState<Instrument>('piano');
   const ref = useRef<HTMLDivElement>(null);
 
@@ -40,26 +39,33 @@ export default function App(): ReactElement {
     audioPlayer?.stopNote(key, instrument);
   };
 
-  const handleCreateSegment = (i: number, doIncrease = false) => {
+  const handleUpdateSegmentKey = (id: number) => {
     setTrack((prev) =>
-      prev.push({
-        span: [i, 1],
-        keys: Array.from(keyToPlaying.filter((v) => v).keys()),
-      }),
+      prev.set(
+        id,
+        [id, 1],
+        Array.from(keyToPlaying.filter((key) => key).keys()),
+      ),
     );
     setKeyToPlaying((prev) => prev.map(() => false));
-    setSelected(i + Number(doIncrease));
     ref.current?.focus();
   };
 
-  const handleChangeSegment = (
-    id: number,
-    [start, length]: [number, number],
-  ) => {
+  const handleUpdateSelected = (id: number) => {
+    setTrack((prev) => prev.updateSelected(id));
+  };
+
+  const handleUpdateSegmentSpan = (id: number, span: [number, number]) => {
     setTrack((prev) => {
-      const keys = prev.get(id)!.keys!;
-      return prev.set(id, { span: [start, length], keys });
+      if (prev.doesSpanFit(id, span)) {
+        console.log('new');
+        return prev.set(id, span);
+      } else {
+        console.log('old');
+        return prev;
+      }
     });
+    console.log(track.toLog());
   };
 
   return (
@@ -67,7 +73,7 @@ export default function App(): ReactElement {
       className="app-container"
       onKeyDown={(e) => {
         if (e.key === ' ') {
-          handleCreateSegment(selected, true);
+          handleUpdateSegmentKey(track.i);
         } else if (!e.repeat) {
           const key = shortcutToKeyMap?.get(e.key);
           if (key) handleDown(key);
@@ -89,21 +95,11 @@ export default function App(): ReactElement {
               audioPlayer,
               track,
               instrument,
-              selected,
-              handleChangeSegment,
+              handleUpdateSelected,
+              setInstrument,
+              handleUpdateSegmentSpan,
             }}
           />
-          <select
-            onChange={(e) => setInstrument(e.target.value as Instrument)}
-            defaultValue={instrument}
-            className="instrument-chooser"
-          >
-            {instruments.map((instrument, i) => (
-              <option value={instrument} key={i}>
-                {instrument}
-              </option>
-            ))}
-          </select>
           <Piano
             {...{ audioPlayer, instrument, keyToPlaying, handleDown, handleUp }}
           />
