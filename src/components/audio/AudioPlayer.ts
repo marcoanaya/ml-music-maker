@@ -7,6 +7,7 @@ import { Sampler } from './Sampler';
 
 export default class AudioPlayer {
   synth: Sampler;
+  part?: Tone.Part;
 
   constructor(
     setAudioPlayer: React.Dispatch<React.SetStateAction<AudioPlayer | null>>,
@@ -23,12 +24,14 @@ export default class AudioPlayer {
     this.synth[instrument].triggerRelease(key.toString());
   }
 
-  startTrack(track: Track, instrument: Instrument): void {
-    const { events, durationIter, end } = track.getPlayParameters();
+  startTrack(track: Track): void {
+    const { events, paramsIter, end } = track.getPlayParameters();
     console.log({ end });
-    const tone = new Tone.Part((time, note) => {
-      const duration = durationIter.next().value;
+
+    this.part = new Tone.Part((time, note) => {
+      const { duration, instrument } = paramsIter.next().value;
       this.synth[instrument].triggerAttackRelease(note, duration, time);
+
       console.log({ note, duration, time });
     }, events).start(0);
 

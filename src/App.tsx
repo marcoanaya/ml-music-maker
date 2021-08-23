@@ -1,64 +1,75 @@
-import { OrderedMap } from 'immutable';
 import React, { useRef, ReactElement, useEffect, useState } from 'react';
-import './App.css';
+import { OrderedMap } from 'immutable';
 import AudioPlayer from './components/audio/AudioPlayer';
-import { instruments } from './components/audio/constants';
 import Maker from './components/maker/Maker';
 import { Track } from './components/maker/Track';
 import { Key } from './components/piano/Key';
 import Piano from './components/piano/Piano';
+import './App.css';
 import { Instrument } from './global';
+
+const keys = Key.getKeysInBetween('C1', 'B6');
+const shortcutToKeyMap = Key.addShortcuts(keys);
 
 export default function App(): ReactElement {
   const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null);
-  const [keyToPlaying, setKeyToPlaying] = useState<OrderedMap<Key, boolean>>(
-    OrderedMap<Key, boolean>(),
+  const [track, setTrack] = useState(new Track());
+  const [keyToPlaying, setKeyToPlaying] = useState(
+    OrderedMap(keys.map((k) => [k, false])),
   );
-  const [shortcutToKeyMap, setShortcutToKeyMap] = useState<Map<string, Key>>(
-    new Map(),
-  );
-  const [track, setTrack] = useState<Track>(new Track());
-  const [instrument, setInstrument] = useState<Instrument>('piano');
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     new AudioPlayer(setAudioPlayer);
     ref.current?.focus();
-    const keys = Key.getKeysInBetween('C1', 'B6');
-    setShortcutToKeyMap(Key.addShortcuts(keys));
-    setKeyToPlaying(OrderedMap(keys.map((k) => [k, false])));
   }, []);
 
-  const handleDown = (key: Key) => {
-    setKeyToPlaying((prev) => prev?.set(key, true));
-    audioPlayer?.startNote(key, instrument);
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === ' ') {
+      handleUpdateSegmentKey(track.i);
+    } else if (!e.repeat) {
+      const key = shortcutToKeyMap?.get(e.key);
+      if (key) handleDown(key);
+    }
   };
 
-  const handleUp = (key: Key) => {
-    setKeyToPlaying((prev) => prev?.set(key, false));
-    audioPlayer?.stopNote(key, instrument);
+  const handleDown = (key: Key) => {
+    setKeyToPlaying((prev) =>
+      prev?.update(key, (bool) => {
+        bool
+          ? audioPlayer?.stopNote(key, track.instrument)
+          : audioPlayer?.startNote(key, track.instrument);
+        return !bool;
+      }),
+    );
   };
 
   const handleUpdateSegmentKey = (id: number) => {
     setTrack((prev) => {
-      return prev.set(
-        id,
-        undefined,
-        Array.from(keyToPlaying.filter((key) => key).keys()),
-      );
+      const keys = Array.from(keyToPlaying.filter((key) => key).keys());
+      return prev.set(id, { keys, instrument: prev.instrument });
     });
-    setKeyToPlaying((prev) => prev.map(() => false));
+    setKeyToPlaying((prev) =>
+      prev.map((bool, key) => {
+        bool && audioPlayer?.stopNote(key, track.instrument);
+        return false;
+      }),
+    );
     ref.current?.focus();
   };
 
-  const handleUpdateSelected = (id: number) => {
-    setTrack((prev) => prev.updateSelected(id));
-  };
+  const handleUpdateSelected = (id: number) =>
+    setTrack((prev) => prev.setSelected(id));
 
-  const handleUpdateSegmentSpan = (id: number, span: [number, number]) => {
+  const handleUpdateSegmentSpan = (
+    id: number,
+    span: [number, number],
+    instrument?: Instrument,
+  ) => {
+    console.log('handle', instrument);
     setTrack((prev) => {
-      if (prev.doesSpanFit(id, span)) {
-        return prev.set(id, span);
+      if (prev.doesSpanFit(id, span, instrument)) {
+        return prev.set(id, { span, instrument });
       } else {
         return prev;
       }
@@ -68,37 +79,30 @@ export default function App(): ReactElement {
   return (
     <div
       className="app-container"
-      onKeyDown={(e) => {
-        if (e.key === ' ') {
-          handleUpdateSegmentKey(track.i);
-        } else if (!e.repeat) {
-          const key = shortcutToKeyMap?.get(e.key);
-          if (key) handleDown(key);
-        }
-      }}
-      onKeyUp={(e) => {
-        if (!e.repeat) {
-          const key = shortcutToKeyMap?.get(e.key);
-          if (key) handleUp(key);
-        }
-      }}
+      onKeyDown={onKeyDown}
       tabIndex={-1}
       ref={ref}
     >
-      {audioPlayer && keyToPlaying ? (
+      {audioPlayer ? (
         <>
           <Maker
             {...{
               audioPlayer,
               track,
-              instrument,
+              instrument: track.instrument,
+              setInstrument: (instrument) =>
+                setTrack((prev) => prev.setInstrument(instrument)),
               handleUpdateSelected,
-              setInstrument,
               handleUpdateSegmentSpan,
             }}
           />
           <Piano
-            {...{ audioPlayer, instrument, keyToPlaying, handleDown, handleUp }}
+            {...{
+              audioPlayer,
+              instrument: track.instrument,
+              keyToPlaying,
+              handleDown,
+            }}
           />
         </>
       ) : (
