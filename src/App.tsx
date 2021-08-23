@@ -40,13 +40,13 @@ export default function App(): ReactElement {
   };
 
   const handleUpdateSegmentKey = (id: number) => {
-    setTrack((prev) =>
-      prev.set(
+    setTrack((prev) => {
+      return prev.set(
         id,
-        [id, 1],
+        undefined,
         Array.from(keyToPlaying.filter((key) => key).keys()),
-      ),
-    );
+      );
+    });
     setKeyToPlaying((prev) => prev.map(() => false));
     ref.current?.focus();
   };
@@ -58,14 +58,11 @@ export default function App(): ReactElement {
   const handleUpdateSegmentSpan = (id: number, span: [number, number]) => {
     setTrack((prev) => {
       if (prev.doesSpanFit(id, span)) {
-        console.log('new');
         return prev.set(id, span);
       } else {
-        console.log('old');
         return prev;
       }
     });
-    console.log(track.toLog());
   };
 
   return (

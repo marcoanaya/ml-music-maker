@@ -24,24 +24,16 @@ export default class AudioPlayer {
   }
 
   startTrack(track: Track, instrument: Instrument): void {
-    console.log(track);
-    const events = track.segments
-      .toArray()
-      .map(({ span: [s, e], keys }) => [
-        [s / 2, e / 2],
-        keys.map((k: Key) => k.toString()),
-      ]);
-    console.log(events);
-    let i = 0;
-    new Tone.Part(
-      (time, note) => {
-        const duration = events[i][0][1];
-        this.synth[instrument].triggerAttackRelease(note, duration, time);
-        i++;
-      },
-      events.map(([[start], keys]) => [start, keys]),
-    ).start(0);
+    const { events, durationIter, end } = track.getPlayParameters();
+    console.log({ end });
+    const tone = new Tone.Part((time, note) => {
+      const duration = durationIter.next().value;
+      this.synth[instrument].triggerAttackRelease(note, duration, time);
+      console.log({ note, duration, time });
+    }, events).start(0);
+
     Tone.Transport.start();
+    setTimeout(() => this.stopTrack(), end * 1000);
   }
 
   stopTrack(): void {
