@@ -8,7 +8,6 @@ export default function Piano({
   audioPlayer,
   keyToPlaying,
   handleDown,
-  handleUp,
 }: PianoProps): ReactElement {
   const renderKey = (key: Key, isPlaying: boolean) => {
     return (
@@ -19,10 +18,10 @@ export default function Piano({
         <button
           className={`piano-${key.getType()}-key ${isPlaying && 'active'}`}
           onMouseDown={() => handleDown(key)}
-          onMouseUp={() => handleUp(key)}
-          onMouseLeave={() => handleUp(key)}
+          // onMouseUp={() => handleUp(key)}
+          // onMouseLeave={() => handleUp(key)}
           onTouchStart={() => handleDown(key)}
-          onTouchEnd={() => handleUp(key)}
+          // onTouchEnd={() => handleUp(key)}
         >
           <span className="piano-text">
             {isPlaying && key.toString()}
@@ -49,5 +48,4 @@ interface PianoProps {
   audioPlayer: AudioPlayer | null;
   keyToPlaying: OrderedMap<Key, boolean>;
   handleDown: (key: Key) => void;
-  handleUp: (key: Key) => void;
 }

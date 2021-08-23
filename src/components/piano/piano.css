@@ -1,13 +1,13 @@
 .piano-container {
-  max-width: 1141px;
+  width:calc(var(--selection-width) * 10 * 4 + var(--instruments-width));
   display:flex;
   flex-wrap: wrap;
   border-top: 10px solid darkcyan;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .piano-natural-key {
-  width: 50px;
+  width: 40px;
   height: 180px;
   cursor: pointer;
   background: #fafafa;
@@ -22,7 +22,7 @@
   cursor: pointer;
   background: #444;
   transform: translateX(-50%);
-  width: 40px;
+  width: 30px;
   height: 120px;
   border-radius: 0 0 3px 3px;
   border : 3px solid #444;
@@ -45,7 +45,7 @@
   font-size: 15px;
 }
 
-.active {
+.piano-accidental-key.active, .piano-natural-key.active {
   border-bottom: 10px solid darkcyan;
   color: darkcyan;
 }
