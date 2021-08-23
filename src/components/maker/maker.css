@@ -1,16 +1,18 @@
 :root {
-  --selection-width: 50px;
+  --selection-width: 40px;
+  --instruments-width: 250px;
 }
 
 .maker-container {
-  max-width: 1141px;
-  width: 2000px;
+  /* max-width: 1141px; */
+  width: calc(var(--selection-width) * 10 * 4 + var(--instruments-width));
   position: relative;
-  height: 400px;
-  width: 100%;
-  justify-content: right;
+  /* height: 400px; */
+  /* width: 100%; */
+  /* justify-content: right; */
   background-color: white;
-  overflow-x: scroll;
+  /* overflow: hidden; */
+  display:inline-block;
 }
 
 .label-wrapper {
@@ -19,20 +21,56 @@
 
 .label {
   width: calc(4 * var(--selection-width));
-  display: inline-block;
-}
-
-.selection-wrapper {
   display: inline-flex;
 }
 
-.selection {
-  display: inline-block;
-  /* height: 100px;
-  width: var(--selection-width); */
-  /* border: inset; */
-  border-color: white;
-  background-color: #444;
-  position: absolute;
+.instruments {
+  width: var(--instruments-width);
+  float: left;
+}
+.instruments>ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.instruments>ul>li {
+  height: var(--selection-width);
+  color: #444; 
+  font-size: 25px;
+  padding-right: 20px;
+  text-align: right;
+}
 
+.track-container {
+  float: left;
+  position: relative;
+}
+
+.segment-container {
+  /* float: left; */
+  padding: 0;
+  margin: 0;
+  height: calc(var(--selection-width) * 20);
+  width: calc(var(--selection-width) * 10 * 4);
+  position: relative;
+}
+
+
+.segment {
+  background-color: #444;
+  border: white solid 1px;
+}
+
+.segment.active {
+  background-color: cyan;
+}
+
+button {
+  border-color: white;
+  border-style: solid;
+  border-radius: 10;
+  background-color:#444;
+  color: white;
+  height: 30px;
+  width: 60px;
 }

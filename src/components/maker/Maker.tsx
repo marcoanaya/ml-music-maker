@@ -1,33 +1,42 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { Instrument } from '../../global';
 import AudioPlayer from '../audio/AudioPlayer';
-import './maker.css';
+import { instruments } from '../audio/constants';
 import Segment from './Segment';
 import { Track } from './Track';
-import { instruments } from '../audio/constants';
+import './maker.css';
+
+export declare namespace Maker {
+  export type HandleUpdateSelected = (id: number) => void;
+  export type HandleUpdateSegmentSpan = (
+    id: number,
+    span: [number, number],
+    instrument?: Instrument,
+  ) => void;
+}
 
 interface MakerProps {
   audioPlayer: AudioPlayer | null;
   track: Track;
   instrument: Instrument;
-  setInstrument: React.Dispatch<React.SetStateAction<Instrument>>;
+  setInstrument: (instrument: Instrument) => void;
   handleUpdateSelected: Maker.HandleUpdateSelected;
   handleUpdateSegmentSpan: Maker.HandleUpdateSegmentSpan;
 }
 
-export default function Maker({
+const Maker: React.FC<MakerProps> = ({
   audioPlayer,
   track,
-  instrument,
   setInstrument,
   handleUpdateSelected,
   handleUpdateSegmentSpan,
-}: MakerProps): ReactElement {
+}) => {
+  console.log(track.instrument);
   return (
     <span>
-      <select
+      {/* <select
         onChange={(e) => setInstrument(e.target.value as Instrument)}
-        defaultValue={instrument}
+        defaultValue={track.instrument}
         className="instrument-chooser"
       >
         {instruments.map((instrument, i) => (
@@ -35,42 +44,45 @@ export default function Maker({
             {instrument}
           </option>
         ))}
-      </select>
+      </select> */}
       <div className="maker-container">
-        {track.segments.map(({ span, keys }, i) => (
-          <Segment
-            key={i}
-            span={span}
-            id={i}
-            track={track}
-            handleUpdateSelected={handleUpdateSelected}
-            handleUpdateSegmentSpan={handleUpdateSegmentSpan}
-          >
-            {keys.map((k) => k.toString()).toString()}
-          </Segment>
-        ))}
-        <button onClick={() => audioPlayer?.startTrack(track, instrument)}>
-          play
-        </button>
-        <button onClick={() => audioPlayer?.stopTrack()}>stop</button>
-        <div className="label-wrapper">
-          {Array(20)
-            .fill(0)
-            .map((_, i) => (
-              <div className="label" key={i}>
-                {i}
-              </div>
+        <div className="instruments">
+          <button onClick={() => audioPlayer?.startTrack(track)}>play</button>
+          <button onClick={() => audioPlayer?.stopTrack()}>stop</button>
+          <ul>
+            {instruments.map((instrument) => (
+              <li key={instrument}>{instrument}</li>
             ))}
+          </ul>
+        </div>
+        <div className="track-container">
+          <div className="label-wrapper">
+            {Array(10)
+              .fill(0)
+              .map((_, i) => (
+                <div className="label" key={i}>
+                  {i}
+                </div>
+              ))}
+          </div>
+          <div className="segment-container">
+            {track.segments.map(({ span, keys }, i) => (
+              <Segment
+                key={i}
+                span={span}
+                id={i}
+                track={track}
+                handleUpdateSelected={handleUpdateSelected}
+                handleUpdateSegmentSpan={handleUpdateSegmentSpan}
+              >
+                {keys.map((k) => k.toString()).toString()}
+              </Segment>
+            ))}
+          </div>
         </div>
       </div>
     </span>
   );
-}
+};
 
-export declare namespace Maker {
-  export type HandleUpdateSelected = (id: number) => void;
-  export type HandleUpdateSegmentSpan = (
-    id: number,
-    span: [number, number],
-  ) => void;
-}
+export default Maker;

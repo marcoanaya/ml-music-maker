@@ -1,15 +1,9 @@
-import Interact from '@interactjs/interactjs/node_modules/@interactjs/types/types';
-import interact from 'interactjs';
-import React from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { useRef } from 'react';
+import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 import { Maker } from './Maker';
-import './maker.css';
 import { Track } from './Track';
-
-const WIDTH = 50;
+import './maker.css';
+import { instruments } from '../audio/constants';
 
 interface SegmentProps {
   track: Track;
@@ -29,46 +23,47 @@ const Segment: React.FC<SegmentProps> = ({
   handleUpdateSegmentSpan,
 }) => {
   const [state, setState] = useState({
-    width: 50,
-    height: 50,
-    x: 0,
+    // width: 40,
+    // height: 40,
+    // x: 0,
     y: 0,
   });
 
   console.log(track.i);
   return (
     <Rnd
-      size={{ width: length * 50, height: 50 }}
-      position={{ x: start * 50, y: state.y }}
+      className={`segment ${track.i === id && 'active'}`}
+      size={{ width: length * 40, height: 40 }}
+      position={{
+        x: start * 40,
+        y: instruments.indexOf(track.segments[id].instrument) * 40,
+      }}
       onDragStop={(e, { lastX, lastY }) => {
         setState((prev) => ({
-          ...prev,
-          // x: lastX,
           y: lastY,
         }));
-        handleUpdateSegmentSpan(id, [Math.round(lastX / 50), length]);
+        handleUpdateSegmentSpan(
+          id,
+          [Math.round(lastX / 40), length],
+          instruments[lastY / 40],
+        );
       }}
       onResizeStop={(e, direction, ref, delta, { x, y }) => {
-        setState((prev) => ({
-          ...prev,
-          // width: ref.offsetWidth,
-          x,
-          y,
-        }));
-        handleUpdateSegmentSpan(id, [
-          Math.round(x / 50),
-          Math.round(ref.offsetWidth / 50),
-        ]);
+        setState((prev) => ({ y }));
+        handleUpdateSegmentSpan(
+          id,
+          [Math.round(x / 40), Math.round(ref.offsetWidth / 40)],
+          track.instrument,
+        );
       }}
       onClick={() => handleUpdateSelected(id)}
-      style={{
-        backgroundColor: track.i === id ? 'blue' : 'red',
-        borderRadius: 10,
-      }}
-      minHeight={50}
-      minWidth={50}
-      dragGrid={[50, 50]}
-      resizeGrid={[50, 50]}
+      onDragStart={() => handleUpdateSelected(id)}
+      onResizeStart={() => handleUpdateSelected(id)}
+      style={{ borderRadius: 10 }}
+      minHeight={40}
+      minWidth={40}
+      dragGrid={[40, 40]}
+      resizeGrid={[40, 40]}
       bounds={'parent'}
     >
       {children}
