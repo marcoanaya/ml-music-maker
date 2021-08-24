@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Maker } from './Maker';
 import { Track } from './Track';
@@ -22,13 +22,6 @@ const Segment: React.FC<SegmentProps> = ({
   handleUpdateSelected,
   handleUpdateSegmentSpan,
 }) => {
-  const [state, setState] = useState({
-    // width: 40,
-    // height: 40,
-    // x: 0,
-    y: 0,
-  });
-
   console.log(id, { start, length });
   return (
     <Rnd
@@ -39,17 +32,13 @@ const Segment: React.FC<SegmentProps> = ({
         y: instruments.indexOf(track.segments[id].instrument) * 40,
       }}
       onDragStop={(e, { lastX, lastY }) => {
-        // setState((prev) => ({
-        //   y: lastY,
-        // }));
         handleUpdateSegmentSpan(
           id,
           [Math.round(lastX / 40), length],
           instruments[lastY / 40],
         );
       }}
-      onResizeStop={(e, direction, ref, delta, { x, y }) => {
-        // setState((prev) => ({ y }));
+      onResizeStop={(e, direction, ref, delta, { x }) => {
         handleUpdateSegmentSpan(
           id,
           [Math.round(x / 40), Math.round(ref.offsetWidth / 40)],

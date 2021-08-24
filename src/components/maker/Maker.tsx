@@ -34,17 +34,6 @@ const Maker: React.FC<MakerProps> = ({
   console.log(track.instrument);
   return (
     <span>
-      {/* <select
-        onChange={(e) => setInstrument(e.target.value as Instrument)}
-        defaultValue={track.instrument}
-        className="instrument-chooser"
-      >
-        {instruments.map((instrument, i) => (
-          <option value={instrument} key={i}>
-            {instrument}
-          </option>
-        ))}
-      </select> */}
       <div className="maker-container">
         <div className="instruments">
           <button onClick={() => audioPlayer?.startTrack(track)}>play</button>
