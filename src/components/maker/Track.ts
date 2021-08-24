@@ -12,19 +12,16 @@ export declare namespace Track {
 export class Track {
   segments: Track.Segment[];
   i: number;
-  end: number;
   instrument: Instrument;
 
   constructor(
     segments?: Track.Segment[],
     i = 0,
-    end = 1,
     instrument: Instrument = 'bass-electric',
   ) {
     const seg: Track.Segment = { span: [0, 1], keys: [], instrument };
     this.segments = segments || [seg];
     this.i = i;
-    this.end = end;
     this.instrument = instrument;
   }
 
@@ -41,18 +38,27 @@ export class Track {
     keys = keys || prevSeg.keys;
     instrument = instrument || prevSeg.instrument;
     this.segments[id] = { span, keys, instrument };
-    this.end = Math.max(this.end, span[0] + span[1]);
 
-    return this.pushEmptySegment().setSelected();
+    return this.new();
   }
 
   pushEmptySegment(): Track {
-    if (this.findEmptySegmentIndex() === -1)
+    if (this.findEmptySegmentIndex() === -1) {
+      const last = this.segments.reduce(
+        (acc, { span: [start, length], instrument }) => {
+          return instrument == this.instrument
+            ? Math.max(acc, start + length)
+            : acc;
+        },
+        0,
+      );
       this.segments.push({
-        span: [this.end, 1],
+        span: [last, 1],
         keys: [],
         instrument: this.instrument,
       });
+    }
+
     return this.new();
   }
 
@@ -67,7 +73,7 @@ export class Track {
   }
 
   new(): Track {
-    return new Track(this.segments, this.i, this.end, this.instrument);
+    return new Track(this.segments, this.i, this.instrument);
   }
 
   findEmptySegmentIndex(): number {
@@ -105,19 +111,20 @@ export class Track {
       ],
     );
     const paramsIter = this.segments
+      .map((e, i) => [i, e] as [number, Track.Segment])
+      .sort(([i, a], [j, b]) => a.span[0] - b.span[0] || i - j)
+      .map(([, e]) => e)
       .map(({ span: [, length], instrument }) => ({
         duration: length * TEMPO,
         instrument,
       }))
       .values();
-    return { events, paramsIter, end: this.end * TEMPO };
-  }
+    const end =
+      TEMPO *
+      Math.max(
+        ...this.segments.map(({ span: [start, duration] }) => start + duration),
+      );
 
-  toLog(): unknown[] {
-    return this.segments.map(({ span: [start, length], keys }) => ({
-      start,
-      end: start + length,
-      keys: keys.map((k) => k.toString()).toString(),
-    }));
+    return { events, paramsIter, end };
   }
 }

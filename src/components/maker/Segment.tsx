@@ -29,7 +29,7 @@ const Segment: React.FC<SegmentProps> = ({
     y: 0,
   });
 
-  console.log(track.i);
+  console.log(id, { start, length });
   return (
     <Rnd
       className={`segment ${track.i === id && 'active'}`}
@@ -39,9 +39,9 @@ const Segment: React.FC<SegmentProps> = ({
         y: instruments.indexOf(track.segments[id].instrument) * 40,
       }}
       onDragStop={(e, { lastX, lastY }) => {
-        setState((prev) => ({
-          y: lastY,
-        }));
+        // setState((prev) => ({
+        //   y: lastY,
+        // }));
         handleUpdateSegmentSpan(
           id,
           [Math.round(lastX / 40), length],
@@ -49,7 +49,7 @@ const Segment: React.FC<SegmentProps> = ({
         );
       }}
       onResizeStop={(e, direction, ref, delta, { x, y }) => {
-        setState((prev) => ({ y }));
+        // setState((prev) => ({ y }));
         handleUpdateSegmentSpan(
           id,
           [Math.round(x / 40), Math.round(ref.offsetWidth / 40)],
