@@ -47,7 +47,10 @@ export default function App(): ReactElement {
   const handleUpdateSegmentKey = (id: number) => {
     setTrack((prev) => {
       const keys = Array.from(keyToPlaying.filter((key) => key).keys());
-      return prev.set(id, { keys, instrument: prev.instrument });
+      return prev
+        .set(id, { keys, instrument: prev.instrument })
+        .pushEmptySegment()
+        .setSelected();
     });
     setKeyToPlaying((prev) =>
       prev.map((bool, key) => {
@@ -67,13 +70,11 @@ export default function App(): ReactElement {
     instrument?: Instrument,
   ) => {
     console.log('handle', instrument);
-    setTrack((prev) => {
-      if (prev.doesSpanFit(id, span, instrument)) {
-        return prev.set(id, { span, instrument });
-      } else {
-        return prev;
-      }
-    });
+    setTrack((prev) =>
+      prev.doesSpanFit(id, span, instrument)
+        ? prev.set(id, { span, instrument })
+        : prev,
+    );
   };
 
   return (
