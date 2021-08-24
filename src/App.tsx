@@ -33,7 +33,7 @@ export default function App(): ReactElement {
     }
   };
 
-  const handleDown = (key: Key) => {
+  const handleDown = (key: Key.Str) => {
     setKeyToPlaying((prev) =>
       prev?.update(key, (bool) => {
         bool
@@ -103,6 +103,7 @@ export default function App(): ReactElement {
               instrument: track.instrument,
               keyToPlaying,
               handleDown,
+              shortcuts: Array.from(shortcutToKeyMap.keys()),
             }}
           />
         </>

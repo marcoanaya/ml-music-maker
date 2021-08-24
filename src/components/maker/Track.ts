@@ -4,7 +4,7 @@ import { Key } from '../piano/Key';
 export declare namespace Track {
   export type Segment = {
     span: [number, number];
-    keys: Key[];
+    keys: Key.Str[];
     instrument: Instrument;
   };
 }
@@ -31,7 +31,7 @@ export class Track {
       span,
       keys,
       instrument,
-    }: { span?: [number, number]; keys?: Key[]; instrument?: Instrument },
+    }: { span?: [number, number]; keys?: Key.Str[]; instrument?: Instrument },
   ): Track {
     const prevSeg = this.segments[id];
     span = span || prevSeg.span;
@@ -105,10 +105,7 @@ export class Track {
   } {
     const TEMPO = 0.5;
     const events: [number, Key.Str[]][] = this.segments.map(
-      ({ span: [start], keys }) => [
-        start * TEMPO,
-        keys.map((k: Key) => k.toString()),
-      ],
+      ({ span: [start], keys }) => [start * TEMPO, keys],
     );
     const paramsIter = this.segments
       .map((e, i) => [i, e] as [number, Track.Segment])

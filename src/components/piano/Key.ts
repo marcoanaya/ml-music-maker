@@ -16,30 +16,28 @@ const notes = [
 ] as const;
 
 export class Key {
-  note: Key.Note;
-  octave: number;
-  shortcut?: string;
-
-  constructor(val: Key.Str) {
-    const [, note, octave] = val.match(/([A-G][#]?)([1-9])/)!;
-    this.note = note as Key.Note;
-    this.octave = Number(octave);
-  }
-
   /* Gets the 'type' of the key, i.e. in a piano black (accidental) or white (natural) */
-  getType(): Key.Type {
-    return this.note.length > 1 ? 'accidental' : 'natural';
+  static getType(key: Key.Str): Key.Type {
+    return key.length > 2 ? 'accidental' : 'natural';
   }
 
   /* Gets the next (higher) key */
-  getNextKey(): Key {
-    const i = (notes.indexOf(this.note) + 1) % notes.length;
-    return new Key(`${notes[i]}${this.octave + Number(i === 0)}`);
+  static getNextKey(key: Key.Str): Key.Str {
+    const { note, octave } = Key.getNoteAndOctave(key);
+    const i = (notes.indexOf(note) + 1) % notes.length;
+    return `${notes[i]}${octave + Number(i === 0)}`;
   }
 
   /* Converts key to string */
-  toString(): Key.Str {
-    return `${this.note}${this.octave}`;
+  static getNoteAndOctave(key: Key.Str): {
+    note: Key.Note;
+    octave: number;
+  } {
+    const [, note, octave] = key.match(/([A-G][#]?)([1-9])/)!;
+    return { note, octave: Number(octave) } as {
+      note: Key.Note;
+      octave: number;
+    };
   }
 
   /* Compares key a to key b. Returns:
@@ -47,7 +45,9 @@ export class Key {
    *    0 if a = b
    *    1 if a > b
    */
-  static compare(a: Key, b: Key): number {
+  static compare(key1: Key.Str, key2: Key.Str): number {
+    const a = this.getNoteAndOctave(key1);
+    const b = this.getNoteAndOctave(key2);
     const i = notes.indexOf(a.note);
     const j = notes.indexOf(b.note);
     // if both octave and note are equal
@@ -59,20 +59,18 @@ export class Key {
   }
 
   /* Gets all the keys from start to end (both inclusive) */
-  static getKeysInBetween(start: Key.Str, end: Key.Str): Key[] {
-    let startKey = new Key(start);
-    const endKey = new Key(end);
-    if (Key.compare(startKey, endKey) > 0) return [];
+  static getKeysInBetween(start: Key.Str, end: Key.Str): Key.Str[] {
+    if (Key.compare(start, end) > 0) return [];
 
-    const keys = [startKey];
-    while (Key.compare(startKey, endKey)) {
-      startKey = startKey.getNextKey();
-      keys.push(startKey);
+    const keys = [start];
+    while (Key.compare(start, end)) {
+      start = Key.getNextKey(start);
+      keys.push(start);
     }
     return keys;
   }
 
-  static addShortcuts(keys: Key[]): Map<string, Key> {
+  static addShortcuts(keys: Key.Str[]): Map<string, Key.Str> {
     let [i, j, k] = [0, 0, 0];
     let naturalCount = 0;
     const shortcutToKeyMap = new Map();
@@ -82,16 +80,14 @@ export class Key {
       k < keys.length
     ) {
       const key = keys[k];
-      if (key.getType() === 'accidental') {
+      if (Key.getType(key) === 'accidental') {
         if (naturalCount !== 2 && j <= i) {
-          key.shortcut = accidentalShortcuts[i];
           shortcutToKeyMap.set(accidentalShortcuts[i], key);
           k++;
         }
         i++;
         naturalCount = 0;
       } else {
-        key.shortcut = naturalShortcuts[j];
         shortcutToKeyMap.set(naturalShortcuts[j], key);
         k++;
         j++;

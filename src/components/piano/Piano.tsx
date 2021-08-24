@@ -7,16 +7,20 @@ import './piano.css';
 export default function Piano({
   audioPlayer,
   keyToPlaying,
+  shortcuts,
   handleDown,
 }: PianoProps): ReactElement {
-  const renderKey = (key: Key, isPlaying: boolean) => {
+  const renderKey = (key: Key.Str, isPlaying: boolean, shortcut: string) => {
+    console.log({ shortcut });
+    console.log({ shortcut });
+    console.log({ shortcut });
     return (
       <div
-        className={`piano-${key.getType()}-key-wrapper`}
+        className={`piano-${Key.getType(key)}-key-wrapper`}
         key={key.toString()}
       >
         <button
-          className={`piano-${key.getType()}-key ${isPlaying && 'active'}`}
+          className={`piano-${Key.getType(key)}-key ${isPlaying && 'active'}`}
           onMouseDown={() => handleDown(key)}
           // onMouseUp={() => handleUp(key)}
           // onMouseLeave={() => handleUp(key)}
@@ -24,9 +28,9 @@ export default function Piano({
           // onTouchEnd={() => handleUp(key)}
         >
           <span className="piano-text">
-            {isPlaying && key.toString()}
+            {isPlaying && key}
             <br />
-            {key.shortcut}
+            {shortcut}
           </span>
         </button>
       </div>
@@ -36,8 +40,8 @@ export default function Piano({
   return (
     <div>
       <div className="piano-container">
-        {Array.from(keyToPlaying, ([key, isPlaying]) =>
-          renderKey(key, isPlaying),
+        {Array.from(keyToPlaying, ([key, isPlaying], i) =>
+          renderKey(key, isPlaying, shortcuts[i]),
         )}
       </div>
     </div>
@@ -46,6 +50,7 @@ export default function Piano({
 
 interface PianoProps {
   audioPlayer: AudioPlayer | null;
-  keyToPlaying: OrderedMap<Key, boolean>;
-  handleDown: (key: Key) => void;
+  keyToPlaying: OrderedMap<Key.Str, boolean>;
+  handleDown: (key: Key.Str) => void;
+  shortcuts: string[];
 }
