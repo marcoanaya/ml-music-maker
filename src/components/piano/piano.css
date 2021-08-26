@@ -1,5 +1,11 @@
+:root {
+  --width: 930px;
+  --piano-natural-key-width: 40px;
+  --instruments-width: 250px;
+}
+
 .piano-container {
-  width:calc(var(--selection-width) * 10 * 4 + var(--instruments-width));
+  width: var(--width);
   display:flex;
   flex-wrap: wrap;
   border-top: 10px solid darkcyan;
@@ -7,7 +13,7 @@
 }
 
 .piano-natural-key {
-  width: 40px;
+  width: var(--piano-natural-key-width);
   height: 180px;
   cursor: pointer;
   background: #fafafa;

@@ -1,17 +1,15 @@
 :root {
-  --selection-width: 40px;
-  --instruments-width: 250px;
+  --selection-width: 20px;
+  --instrument-labels-width: 150px;
+  --maker-height: calc(var(--selection-width) * 20 );
 }
 
 .maker-container {
-  /* max-width: 1141px; */
-  width: calc(var(--selection-width) * 10 * 4 + var(--instruments-width));
+  max-width: var(--width);
   position: relative;
-  /* height: 400px; */
-  /* width: 100%; */
-  /* justify-content: right; */
   background-color: white;
-  /* overflow: hidden; */
+  overflow-x: scroll;
+  overflow-y: hidden;
   display:inline-block;
 }
 
@@ -25,8 +23,13 @@
 }
 
 .instruments {
-  width: var(--instruments-width);
+  width: var(--instrument-labels-width);
   float: left;
+  position: fixed;
+  z-index: 2;
+  background-color: white;
+  margin: 8px;
+  padding-right: 8px;
 }
 .instruments>ul {
   list-style-type: none;
@@ -36,28 +39,28 @@
 .instruments>ul>li {
   height: var(--selection-width);
   color: #444; 
-  font-size: 25px;
-  padding-right: 20px;
+  font-size: 15px;
   text-align: right;
 }
 
 .track-container {
   float: left;
   position: relative;
-  
+  left: var(--instrument-labels-width);
+  margin: 20px;
 }
 
 .segment-container {
-  /* float: left; */
   padding: 0;
   margin: 0;
-  height: calc(var(--selection-width) * 20);
-  width: calc(var(--selection-width) * 10 * 4);
+  height: var(--maker-height);
+  width: 100%;
   position: relative;
   background-image:
-  repeating-linear-gradient(#ccc 0 2px, transparent 2px 100%),
-  repeating-linear-gradient(90deg, #ccc 0 2px, transparent 2px 100%);
-  background-size: 40px 40px;
+  repeating-linear-gradient(#444 0 2px, transparent 2px 100%),
+  repeating-linear-gradient(90deg, #444 0 2px, transparent 2px 100%);
+  background-size: var(--selection-width) var(--selection-width);
+background-position: bottom 1px right 1px;
 }
 
 .playState {
@@ -72,7 +75,7 @@
 
 .segment {
   background-color: #444;
-  border: white solid 1px;
+  /* border: white solid 1px; */
 }
 
 .segment.active {
