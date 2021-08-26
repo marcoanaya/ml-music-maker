@@ -55,14 +55,14 @@ export default class Segments {
 
   getNextId(prevId: number): number {
     const segment = this.get(prevId);
-    let max = { id: -1, start: -1 };
+    let min = { id: -1, start: Infinity };
     for (const [id, { start }] of this.getInstrumentMap(prevId).entries()) {
-      if (segment.start + segment.start < start && start > max.start) {
-        max = { id, start };
+      if (segment.start < start && start < min.start) {
+        min = { id, start };
       }
     }
-    return max.id !== -1
-      ? max.id
+    return min.id !== -1
+      ? min.id
       : this.set({
           instrument: segment.instrument,
           start: segment.start + segment.duration,
@@ -72,6 +72,8 @@ export default class Segments {
   }
 
   doesSpanFit(id: number, segment: Track.Segment): boolean {
+    console.log({ id, segment });
+
     return this.getInstrumentEntries(segment.instrument).every(
       ([i, { start, duration }]) => {
         return (
@@ -98,7 +100,7 @@ export default class Segments {
   entries(): [number, Track.Segment][] {
     return Array.from(this.data.keys()).reduce(
       (acc, instrument) => [...acc, ...this.getInstrumentEntries(instrument)],
-      [] as [number, Track.Segment][],
+      Array<[number, Track.Segment]>(),
     );
   }
 }

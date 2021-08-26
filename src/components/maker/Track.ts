@@ -3,6 +3,7 @@ import { Key } from '../piano/Key';
 import Segments from './Segments';
 
 const DEFAULT_INSTRUMENT: Instrument = 'piano';
+const DEFAULT_SIZE = 200;
 
 export declare namespace Track {
   export type Segment = {
@@ -17,9 +18,14 @@ export class Track {
   segments: Segments;
   i: number;
   instrument: Instrument;
+  size = DEFAULT_SIZE;
 
-  constructor(segments?: Segments, i = 0, instrument = DEFAULT_INSTRUMENT) {
-    this.segments = segments !== undefined ? segments : new Segments();
+  constructor(
+    segments = new Segments(),
+    i = 0,
+    instrument = DEFAULT_INSTRUMENT,
+  ) {
+    this.segments = segments;
     this.i = i;
     this.instrument = instrument;
   }
@@ -35,13 +41,13 @@ export class Track {
     return this.clone();
   }
 
-  setInstrument(instrument?: Instrument): Track {
-    this.instrument = instrument || this.segments.get(this.i).instrument;
+  setInstrument(instrument = this.segments.get(this.i).instrument): Track {
+    this.instrument = instrument;
     return this.clone();
   }
 
-  setSelected(i?: number): Track {
-    this.i = i !== undefined ? i : this.segments.getNextId(this.i);
+  setSelected(i = this.segments.getNextId(this.i)): Track {
+    this.i = i;
     return this.clone();
   }
 
@@ -49,20 +55,27 @@ export class Track {
     return new Track(this.segments, this.i, this.instrument);
   }
 
+  isSegmentValid(id: number, segment: Track.Segment): boolean {
+    return (
+      segment.start + segment.duration <= this.size &&
+      segment.start >= 0 &&
+      this.segments.doesSpanFit(id, segment)
+    );
+  }
+
   getPlayParameters(): {
     events: [number, Key.Str[]][];
     end: number;
     paramsIter: IterableIterator<{ duration: number; instrument: Instrument }>;
   } {
-    const TEMPO = 0.5;
+    const TEMPO = 0.25;
     const segments = this.segments.entries();
     const events: [number, Key.Str[]][] = segments.map(
       ([, { start, keys }]) => [start * TEMPO, keys],
     );
     const paramsIter = segments
       .sort(([i, a], [j, b]) => a.start - b.start || i - j)
-      .map(([, e]) => e)
-      .map(({ duration, instrument }) => ({
+      .map(([, { duration, instrument }]) => ({
         duration: duration * TEMPO,
         instrument,
       }))
