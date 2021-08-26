@@ -60,7 +60,6 @@ export class Track {
       ([, { start, keys }]) => [start * TEMPO, keys],
     );
     const paramsIter = segments
-      .map(([, e], i) => [i, e] as [number, Track.Segment])
       .sort(([i, a], [j, b]) => a.start - b.start || i - j)
       .map(([, e]) => e)
       .map(({ duration, instrument }) => ({
