@@ -33,6 +33,7 @@ const Maker: React.FC<MakerProps> = ({
   handleUpdateSelected,
   handleUpdateSegmentSpan,
 }) => {
+  console.log(track.size);
   return (
     <span>
       <div className="maker-container">
@@ -50,7 +51,7 @@ const Maker: React.FC<MakerProps> = ({
         </div>
         <div className="track-container">
           <div className="label-wrapper">
-            {Array(10)
+            {Array(track.size / 4)
               .fill(0)
               .map((_, i) => (
                 <div className="label" key={i}>

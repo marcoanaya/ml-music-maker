@@ -65,7 +65,7 @@ export default function App(): ReactElement {
   };
   const handleUpdateSegmentSpan = (id: number, segment: Track.Segment) => {
     setTrack((prev) =>
-      prev.segments.doesSpanFit(id, segment)
+      prev.isSegmentValid(id, segment)
         ? prev.set(id, segment).setInstrument()
         : prev,
     );

@@ -5,6 +5,7 @@ import { Track } from '../maker/Track';
 import { Key } from '../piano/Key';
 import { Sampler } from './Sampler';
 
+const TEMPO = 0.25;
 export declare namespace AudioPlayer {
   export type PlayState = number | 'STOPPED';
   export type HandlePlayStateChange = React.Dispatch<
@@ -50,7 +51,7 @@ export class AudioPlayer {
         this.handlePlayStateChange((prev) =>
           prev === 'STOPPED' ? 1 : prev + 1,
         ),
-      0.5,
+      TEMPO,
     ).start(0);
     Tone.Transport.start();
     setTimeout(() => this.stopTrack(), end * 1000);
