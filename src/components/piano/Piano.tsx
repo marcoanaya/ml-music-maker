@@ -1,6 +1,6 @@
 import { OrderedMap } from 'immutable';
 import React, { ReactElement } from 'react';
-import AudioPlayer from '../audio/AudioPlayer';
+import { AudioPlayer } from '../audio/AudioPlayer';
 import { Key } from './Key';
 import './piano.css';
 
@@ -11,9 +11,6 @@ export default function Piano({
   handleDown,
 }: PianoProps): ReactElement {
   const renderKey = (key: Key.Str, isPlaying: boolean, shortcut: string) => {
-    console.log({ shortcut });
-    console.log({ shortcut });
-    console.log({ shortcut });
     return (
       <div
         className={`piano-${Key.getType(key)}-key-wrapper`}

@@ -7,7 +7,7 @@ import { instruments } from '../audio/constants';
 
 interface SegmentProps {
   track: Track;
-  span: [number, number];
+  segment: Track.Segment;
   children: React.ReactChild;
   id: number;
   handleUpdateSelected: Maker.HandleUpdateSelected;
@@ -18,32 +18,33 @@ const Segment: React.FC<SegmentProps> = ({
   track,
   children,
   id,
-  span: [start, length],
+  segment: { start, duration, keys, instrument },
   handleUpdateSelected,
   handleUpdateSegmentSpan,
 }) => {
-  console.log(id, { start, length });
   return (
     <Rnd
       className={`segment ${track.i === id && 'active'}`}
-      size={{ width: length * 40, height: 40 }}
+      size={{ width: duration * 40, height: 40 }}
       position={{
         x: start * 40,
-        y: instruments.indexOf(track.segments[id].instrument) * 40,
+        y: instruments.indexOf(track.segments.get(id).instrument) * 40,
       }}
       onDragStop={(e, { lastX, lastY }) => {
-        handleUpdateSegmentSpan(
-          id,
-          [Math.round(lastX / 40), length],
-          instruments[lastY / 40],
-        );
+        handleUpdateSegmentSpan(id, {
+          start: Math.round(lastX / 40),
+          instrument: instruments[lastY / 40],
+          duration,
+          keys,
+        });
       }}
       onResizeStop={(e, direction, ref, delta, { x }) => {
-        handleUpdateSegmentSpan(
-          id,
-          [Math.round(x / 40), Math.round(ref.offsetWidth / 40)],
-          track.instrument,
-        );
+        handleUpdateSegmentSpan(id, {
+          start: Math.round(x / 40),
+          duration: Math.round(ref.offsetWidth / 40),
+          instrument,
+          keys,
+        });
       }}
       onClick={() => handleUpdateSelected(id)}
       onDragStart={() => handleUpdateSelected(id)}

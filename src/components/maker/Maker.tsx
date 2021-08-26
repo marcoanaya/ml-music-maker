@@ -1,17 +1,17 @@
 import React from 'react';
 import { Instrument } from '../../global';
-import AudioPlayer from '../audio/AudioPlayer';
+import { AudioPlayer } from '../audio/AudioPlayer';
 import { instruments } from '../audio/constants';
 import Segment from './Segment';
 import { Track } from './Track';
 import './maker.css';
+import { useState } from 'react';
 
 export declare namespace Maker {
   export type HandleUpdateSelected = (id: number) => void;
   export type HandleUpdateSegmentSpan = (
     id: number,
-    span: [number, number],
-    instrument?: Instrument,
+    segment: Track.Segment,
   ) => void;
 }
 
@@ -19,6 +19,7 @@ interface MakerProps {
   audioPlayer: AudioPlayer | null;
   track: Track;
   instrument: Instrument;
+  playState: AudioPlayer.PlayState;
   setInstrument: (instrument: Instrument) => void;
   handleUpdateSelected: Maker.HandleUpdateSelected;
   handleUpdateSegmentSpan: Maker.HandleUpdateSegmentSpan;
@@ -28,16 +29,21 @@ const Maker: React.FC<MakerProps> = ({
   audioPlayer,
   track,
   setInstrument,
+  playState,
   handleUpdateSelected,
   handleUpdateSegmentSpan,
 }) => {
-  console.log(track.instrument);
+  console.log(track.i);
+
   return (
     <span>
       <div className="maker-container">
         <div className="instruments">
-          <button onClick={() => audioPlayer?.startTrack(track)}>play</button>
-          <button onClick={() => audioPlayer?.stopTrack()}>stop</button>
+          {playState === 'STOPPED' ? (
+            <button onClick={() => audioPlayer?.startTrack(track)}>play</button>
+          ) : (
+            <button onClick={() => audioPlayer?.stopTrack()}>stop</button>
+          )}
           <ul>
             {instruments.map((instrument) => (
               <li key={instrument}>{instrument}</li>
@@ -55,16 +61,16 @@ const Maker: React.FC<MakerProps> = ({
               ))}
           </div>
           <div className="segment-container">
-            {track.segments.map(({ span, keys }, i) => (
+            {track.segments.entries().map(([id, segment]) => (
               <Segment
-                key={i}
-                span={span}
-                id={i}
+                key={id}
+                segment={segment}
+                id={id}
                 track={track}
                 handleUpdateSelected={handleUpdateSelected}
                 handleUpdateSegmentSpan={handleUpdateSegmentSpan}
               >
-                {keys.map((k) => k.toString()).toString()}
+                {segment.keys.map((k) => k.toString()).toString()}
               </Segment>
             ))}
           </div>
