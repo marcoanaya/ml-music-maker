@@ -37,15 +37,10 @@ export default class Segments {
 
   set(segment: Track.Segment): number {
     this.update(this.highestIndex, segment);
-    const log = (i: number) => {
-      console.log('set', i);
-      return i;
-    };
-    return log(this.highestIndex++);
+    return this.highestIndex++;
   }
 
   update(id: number, { instrument, ...rest }: Track.Segment): void {
-    console.log('update', id);
     if (this.index.has(id) && instrument !== this.index.get(id)) {
       this.delete(id);
     }
@@ -54,7 +49,6 @@ export default class Segments {
   }
 
   delete(id: number): void {
-    console.log('delete', id);
     this.getInstrumentMap(id).delete(id);
     this.index.delete(id);
   }
@@ -79,7 +73,7 @@ export default class Segments {
 
   doesSpanFit(id: number, segment: Track.Segment): boolean {
     return this.getInstrumentEntries(segment.instrument).every(
-      ([, { start, duration }], i) => {
+      ([i, { start, duration }]) => {
         return (
           id === i ||
           segment.start >= start + duration ||

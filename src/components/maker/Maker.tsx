@@ -33,8 +33,6 @@ const Maker: React.FC<MakerProps> = ({
   handleUpdateSelected,
   handleUpdateSegmentSpan,
 }) => {
-  console.log(track.i);
-
   return (
     <span>
       <div className="maker-container">

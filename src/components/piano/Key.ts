@@ -1,19 +1,10 @@
 import { accidentalShortcuts, naturalShortcuts } from './shortcuts';
 
-const notes = [
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-  'A',
-  'A#',
-  'B',
-] as const;
+export declare namespace Key {
+  export type Note = typeof notes[number];
+  export type Type = 'accidental' | 'natural';
+  export type Str = `${Key.Note}${number}`;
+}
 
 export class Key {
   /* Gets the 'type' of the key, i.e. in a piano black (accidental) or white (natural) */
@@ -98,8 +89,17 @@ export class Key {
   }
 }
 
-export declare namespace Key {
-  export type Note = typeof notes[number];
-  export type Type = 'accidental' | 'natural';
-  export type Str = `${Key.Note}${number}`;
-}
+const notes = [
+  'C',
+  'C#',
+  'D',
+  'D#',
+  'E',
+  'F',
+  'F#',
+  'G',
+  'G#',
+  'A',
+  'A#',
+  'B',
+] as const;

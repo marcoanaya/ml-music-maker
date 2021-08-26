@@ -42,7 +42,6 @@ export class Track {
 
   setSelected(i?: number): Track {
     this.i = i !== undefined ? i : this.segments.getNextId(this.i);
-    console.log(this.i);
     return this.clone();
   }
 

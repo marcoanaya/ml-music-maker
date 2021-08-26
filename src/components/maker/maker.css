@@ -44,6 +44,7 @@
 .track-container {
   float: left;
   position: relative;
+  
 }
 
 .segment-container {
@@ -53,6 +54,19 @@
   height: calc(var(--selection-width) * 20);
   width: calc(var(--selection-width) * 10 * 4);
   position: relative;
+  background-image:
+  repeating-linear-gradient(#ccc 0 2px, transparent 2px 100%),
+  repeating-linear-gradient(90deg, #ccc 0 2px, transparent 2px 100%);
+  background-size: 40px 40px;
+}
+
+.playState {
+  border-left: 6px solid green;
+  height: 500px;
+  position: absolute;
+  left: 50%;
+  margin-left: -3px;
+  top: 0;
 }
 
 
