@@ -31,7 +31,7 @@ export class Sampler {
         }, {} as { [k: string]: string });
       }
       const volume = new Tone.Volume().toDestination();
-      volume.mute = true;
+      // volume.mute = true;
       const sampler = new Tone.Sampler({
         urls,
         onload,
