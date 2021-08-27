@@ -1,39 +1,29 @@
 import React from 'react';
-import { Instrument } from '../../global';
+import { Handlers, Instrument } from '../../global';
 import { AudioPlayer } from '../audio/AudioPlayer';
 import { instruments } from '../audio/constants';
-import Segment from './Segment';
-import { Track } from './Track';
+import { Segment } from './Segment';
+import * as Track from './Track';
 import './maker.css';
-import { useState } from 'react';
-
-export declare namespace Maker {
-  export type HandleUpdateSelected = (id: number) => void;
-  export type HandleUpdateSegmentSpan = (
-    id: number,
-    segment: Track.Segment,
-  ) => void;
-}
 
 interface MakerProps {
   audioPlayer: AudioPlayer | null;
-  track: Track;
+  track: Track.Track;
   instrument: Instrument;
   playState: AudioPlayer.PlayState;
-  setInstrument: (instrument: Instrument) => void;
-  handleUpdateSelected: Maker.HandleUpdateSelected;
-  handleUpdateSegmentSpan: Maker.HandleUpdateSegmentSpan;
+  handleUpdateInstrument: Handlers.UpdateInstrument;
+  handleUpdateSelected: Handlers.UpdateSelected;
+  handleUpdateSegmentSpan: Handlers.UpdateSegmentSpan;
 }
 
-const Maker: React.FC<MakerProps> = ({
+export const Maker: React.FC<MakerProps> = ({
   audioPlayer,
   track,
-  setInstrument,
   playState,
+  handleUpdateInstrument,
   handleUpdateSelected,
   handleUpdateSegmentSpan,
 }) => {
-  console.log(track.size);
   return (
     <span>
       <div className="maker-container">
@@ -78,5 +68,3 @@ const Maker: React.FC<MakerProps> = ({
     </span>
   );
 };
-
-export default Maker;

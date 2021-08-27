@@ -1,7 +1,7 @@
 import { OrderedMap } from 'immutable';
 import React, { ReactElement } from 'react';
 import { AudioPlayer } from '../audio/AudioPlayer';
-import { Key } from './Key';
+import Key, { KeyUtil } from './Key';
 import './piano.css';
 
 export default function Piano({
@@ -10,14 +10,16 @@ export default function Piano({
   shortcuts,
   handleDown,
 }: PianoProps): ReactElement {
-  const renderKey = (key: Key.Str, isPlaying: boolean, shortcut: string) => {
+  const renderKey = (key: Key, isPlaying: boolean, shortcut: string) => {
     return (
       <div
-        className={`piano-${Key.getType(key)}-key-wrapper`}
+        className={`piano-${KeyUtil.getType(key)}-key-wrapper`}
         key={key.toString()}
       >
         <button
-          className={`piano-${Key.getType(key)}-key ${isPlaying && 'active'}`}
+          className={`piano-${KeyUtil.getType(key)}-key ${
+            isPlaying && 'active'
+          }`}
           onMouseDown={() => handleDown(key)}
           // onMouseUp={() => handleUp(key)}
           // onMouseLeave={() => handleUp(key)}
@@ -47,7 +49,7 @@ export default function Piano({
 
 interface PianoProps {
   audioPlayer: AudioPlayer | null;
-  keyToPlaying: OrderedMap<Key.Str, boolean>;
-  handleDown: (key: Key.Str) => void;
+  keyToPlaying: OrderedMap<Key, boolean>;
+  handleDown: (key: Key) => void;
   shortcuts: string[];
 }

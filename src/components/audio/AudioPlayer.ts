@@ -2,7 +2,7 @@ import React from 'react';
 import * as Tone from 'tone';
 import { Instrument } from '../../global';
 import { Track } from '../maker/Track';
-import { Key } from '../piano/Key';
+import Key from '../piano/Key';
 import { Sampler } from './Sampler';
 
 const TEMPO = 0.25;
@@ -27,12 +27,12 @@ export class AudioPlayer {
     this.handlePlayStateChange = handlePlayStateChange;
   }
 
-  startNote(key: Key.Str, instrument: Instrument): void {
+  startNote(key: Key, instrument: Instrument): void {
     Tone.Master.mute = false;
     this.synth.get(instrument).triggerAttack(key);
   }
 
-  stopNote(key: Key.Str, instrument: Instrument): void {
+  stopNote(key: Key, instrument: Instrument): void {
     this.synth.get(instrument).triggerRelease(key);
   }
 

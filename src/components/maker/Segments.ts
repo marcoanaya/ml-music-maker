@@ -1,15 +1,15 @@
 import { Instrument } from '../../global';
 import { instruments } from '../audio/constants';
-import { Key } from '../piano/Key';
-import { Track } from './Track';
+import Key from '../piano/Key';
+import { Segment } from './Track';
 
 const DEFAULT_INSTRUMENT: Instrument = 'piano';
 
 type InstrumentSegmentsMap = Map<
   number,
-  { start: number; duration: number; keys: Key.Str[] }
+  { start: number; duration: number; keys: Key[] }
 >;
-export default class Segments {
+export class Segments {
   index = new Map<number, Instrument>();
   data = new Map<Instrument, InstrumentSegmentsMap>(
     instruments.map((i) => [i, new Map()]),
@@ -25,7 +25,7 @@ export default class Segments {
     });
   }
 
-  get(id: number): Track.Segment {
+  get(id: number): Segment {
     const instrument = this.index.get(id)!;
     return { instrument, ...this.data.get(instrument)!.get(id)! };
   }
@@ -35,12 +35,12 @@ export default class Segments {
     return this.data.get(instrument)!;
   }
 
-  set(segment: Track.Segment): number {
+  set(segment: Segment): number {
     this.update(this.highestIndex, segment);
     return this.highestIndex++;
   }
 
-  update(id: number, { instrument, ...rest }: Track.Segment): void {
+  update(id: number, { instrument, ...rest }: Segment): void {
     if (this.index.has(id) && instrument !== this.index.get(id)) {
       this.delete(id);
     }
@@ -71,7 +71,7 @@ export default class Segments {
         });
   }
 
-  doesSpanFit(id: number, segment: Track.Segment): boolean {
+  doesSpanFit(id: number, segment: Segment): boolean {
     console.log({ id, segment });
 
     return this.getInstrumentEntries(segment.instrument).every(
@@ -85,7 +85,7 @@ export default class Segments {
     );
   }
 
-  getInstrumentEntries(instrument: Instrument): [number, Track.Segment][] {
+  getInstrumentEntries(instrument: Instrument): [number, Segment][] {
     return Array.from(this.data.get(instrument)!.entries()).map(
       ([id, rest]) => [
         id,
@@ -97,10 +97,10 @@ export default class Segments {
     );
   }
 
-  entries(): [number, Track.Segment][] {
+  entries(): [number, Segment][] {
     return Array.from(this.data.keys()).reduce(
       (acc, instrument) => [...acc, ...this.getInstrumentEntries(instrument)],
-      Array<[number, Track.Segment]>(),
+      Array<[number, Segment]>(),
     );
   }
 }

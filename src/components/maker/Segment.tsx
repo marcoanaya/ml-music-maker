@@ -1,22 +1,30 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { Maker } from './Maker';
-import { Track } from './Track';
-import './maker.css';
+import Key from '../piano/Key';
+import * as Track from './Track';
 import { instruments } from '../audio/constants';
+import { Handlers, Instrument } from '../../global';
+import './maker.css';
 
 const SEGMENT_WIDTH = 20;
 
+export type Segment = {
+  start: number;
+  duration: number;
+  keys: Key[];
+  instrument: Instrument;
+};
+
 interface SegmentProps {
-  track: Track;
-  segment: Track.Segment;
+  track: Track.Track;
+  segment: Segment;
   children: React.ReactChild;
   id: number;
-  handleUpdateSelected: Maker.HandleUpdateSelected;
-  handleUpdateSegmentSpan: Maker.HandleUpdateSegmentSpan;
+  handleUpdateSelected: Handlers.UpdateSelected;
+  handleUpdateSegmentSpan: Handlers.UpdateSegmentSpan;
 }
 
-const Segment: React.FC<SegmentProps> = ({
+export const Segment: React.FC<SegmentProps> = ({
   track,
   children,
   id,
@@ -68,5 +76,3 @@ const Segment: React.FC<SegmentProps> = ({
     </Rnd>
   );
 };
-
-export default Segment;

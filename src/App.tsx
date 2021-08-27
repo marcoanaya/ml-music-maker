@@ -1,19 +1,20 @@
 import React, { useRef, ReactElement, useEffect, useState } from 'react';
 import { OrderedMap } from 'immutable';
 import { AudioPlayer } from './components/audio/AudioPlayer';
-import Maker from './components/maker/Maker';
-import { Track } from './components/maker/Track';
-import { Key } from './components/piano/Key';
+import { Maker } from './components/maker/Maker';
+import * as Track from './components/maker/Track';
+import Key, { KeyUtil } from './components/piano/Key';
 import Piano from './components/piano/Piano';
 import './App.css';
+import { Handlers } from './global';
 
-const keys = Key.getKeysInBetween('C1', 'B6');
-const shortcutToKeyMap = Key.addShortcuts(keys);
+const keys = KeyUtil.getKeysInBetween('C1', 'B6');
+const shortcutToKeyMap = KeyUtil.addShortcuts(keys);
 
 export default function App(): ReactElement {
   const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null);
   const [playState, setPlayState] = useState<AudioPlayer.PlayState>('STOPPED');
-  const [track, setTrack] = useState(new Track());
+  const [track, setTrack] = useState(new Track.Track());
   const [keyToPlaying, setKeyToPlaying] = useState(
     OrderedMap(keys.map((k) => [k, false])),
   );
@@ -33,7 +34,7 @@ export default function App(): ReactElement {
     }
   };
 
-  const handleDown = (key: Key.Str) => {
+  const handleDown = (key: Key) => {
     setKeyToPlaying((prev) =>
       prev?.update(key, (bool) => {
         bool
@@ -60,10 +61,13 @@ export default function App(): ReactElement {
     ref.current?.focus();
   };
 
-  const handleUpdateSelected = (id: number) => {
+  const handleUpdateInstrument: Handlers.UpdateInstrument = (instrument) =>
+    setTrack((prev) => prev.setInstrument(instrument));
+
+  const handleUpdateSelected: Handlers.UpdateSelected = (id) =>
     setTrack((prev) => prev.setSelected(id));
-  };
-  const handleUpdateSegmentSpan = (id: number, segment: Track.Segment) => {
+
+  const handleUpdateSegmentSpan: Handlers.UpdateSegmentSpan = (id, segment) => {
     setTrack((prev) =>
       prev.isSegmentValid(id, segment)
         ? prev.set(id, segment).setInstrument()
@@ -86,8 +90,7 @@ export default function App(): ReactElement {
               track,
               instrument: track.instrument,
               playState,
-              setInstrument: (instrument) =>
-                setTrack((prev) => prev.setInstrument(instrument)),
+              handleUpdateInstrument,
               handleUpdateSelected,
               handleUpdateSegmentSpan,
             }}
