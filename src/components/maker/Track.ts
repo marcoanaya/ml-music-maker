@@ -12,17 +12,17 @@ export { Segment } from './Segment';
 
 export class Track {
   segments: Segments;
-  i: number;
+  id: number;
   instrument: Instrument;
   size = DEFAULT_SIZE;
 
   constructor(
     segments = new Segments(),
-    i = 0,
+    id = 0,
     instrument = DEFAULT_INSTRUMENT,
   ) {
     this.segments = segments;
-    this.i = i;
+    this.id = id;
     this.instrument = instrument;
   }
 
@@ -33,7 +33,7 @@ export class Track {
   }
 
   append(instrument = this.instrument): Track {
-    this.i = this.segments.append(instrument);
+    this.id = this.segments.append(instrument);
     return this.clone();
   }
 
@@ -42,18 +42,18 @@ export class Track {
     return this.clone();
   }
 
-  setInstrument(instrument = this.segments.get(this.i).instrument): Track {
+  setInstrument(instrument = this.segments.get(this.id).instrument): Track {
     this.instrument = instrument;
     return this.clone();
   }
 
-  setSelected(i = this.segments.getNextId(this.i)): Track {
-    this.i = i;
+  setSelected(id = this.segments.getNextId(this.id)): Track {
+    this.id = id;
     return this.clone();
   }
 
   clone(): Track {
-    return new Track(this.segments, this.i, this.instrument);
+    return new Track(this.segments, this.id, this.instrument);
   }
 
   isSegmentValid(id: number, segment: Segment): boolean {

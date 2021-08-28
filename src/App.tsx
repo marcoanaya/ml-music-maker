@@ -27,7 +27,7 @@ export default function App(): ReactElement {
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === ' ') {
-      handleUpdateSegmentKey(track.i);
+      handleUpdateSegmentKey(track.id);
     } else if (!e.repeat) {
       const key = shortcutToKeyMap?.get(e.key);
       if (key) handleDown(key);

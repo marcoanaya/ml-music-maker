@@ -34,7 +34,7 @@ export const Segment: React.FC<SegmentProps> = ({
 }) => {
   return (
     <Rnd
-      className={`segment ${track.i === id && 'active'}`}
+      className={`segment ${track.id === id && 'active'}`}
       size={{ width: duration * SEGMENT_WIDTH, height: SEGMENT_WIDTH }}
       position={{
         x: start * SEGMENT_WIDTH,
