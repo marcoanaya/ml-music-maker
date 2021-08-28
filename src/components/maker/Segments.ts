@@ -17,12 +17,7 @@ export class Segments {
   highestIndex = 0;
 
   constructor() {
-    this.set({
-      instrument: DEFAULT_INSTRUMENT,
-      start: 0,
-      duration: 1,
-      keys: [],
-    });
+    this.set();
   }
 
   get(id: number): Segment {
@@ -35,7 +30,14 @@ export class Segments {
     return this.data.get(instrument)!;
   }
 
-  set(segment: Segment): number {
+  set(partialSegment?: Partial<Segment>): number {
+    const segment = {
+      instrument: DEFAULT_INSTRUMENT,
+      start: 0,
+      duration: 1,
+      keys: [],
+      ...partialSegment,
+    };
     this.update(this.highestIndex, segment);
     return this.highestIndex++;
   }
@@ -66,9 +68,15 @@ export class Segments {
       : this.set({
           instrument: segment.instrument,
           start: segment.start + segment.duration,
-          duration: 1,
-          keys: [],
         });
+  }
+
+  append(instrument: Instrument): number {
+    const start = [...this.data.get(instrument)!.entries()].reduce(
+      (max, [, { start, duration }]) => Math.max(max, start + duration),
+      0,
+    );
+    return this.set({ start, instrument });
   }
 
   doesSpanFit(id: number, segment: Segment): boolean {

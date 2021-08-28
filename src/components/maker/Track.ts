@@ -5,6 +5,7 @@ import { Segment } from './Segment';
 
 const DEFAULT_INSTRUMENT: Instrument = 'piano';
 const DEFAULT_SIZE = 200;
+const TEMPO = 0.25;
 
 export { Segments } from './Segments';
 export { Segment } from './Segment';
@@ -28,6 +29,11 @@ export class Track {
   set(id: number, newSegment: Partial<Segment>): Track {
     const segment = { ...this.segments.get(id), ...newSegment };
     this.segments.update(id, segment);
+    return this.clone();
+  }
+
+  append(instrument = this.instrument): Track {
+    this.i = this.segments.append(instrument);
     return this.clone();
   }
 
@@ -63,7 +69,6 @@ export class Track {
     end: number;
     paramsIter: IterableIterator<{ duration: number; instrument: Instrument }>;
   } {
-    const TEMPO = 0.25;
     const segments = this.segments
       .entries()
       .sort(([i, a], [j, b]) => a.start - b.start || i - j);
