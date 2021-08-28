@@ -1,5 +1,5 @@
 :root {
-  --selection-width: 20px;
+  --selection-width: 30px;
   --instrument-labels-width: 150px;
   --maker-height: calc(var(--selection-width) * 20 );
 }

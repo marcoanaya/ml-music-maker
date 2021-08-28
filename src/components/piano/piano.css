@@ -1,6 +1,6 @@
 :root {
-  --width: 930px;
-  --piano-natural-key-width: 40px;
+  --width: 1430px;
+  --piano-natural-key-width: 30px;
   --instruments-width: 250px;
 }
 
@@ -8,7 +8,7 @@
   width: var(--width);
   display:flex;
   flex-wrap: wrap;
-  border-top: 10px solid darkcyan;
+  /* border-top: 10px solid darkcyan; */
   /* width: 100%; */
 }
 
@@ -28,7 +28,7 @@
   cursor: pointer;
   background: #444;
   transform: translateX(-50%);
-  width: 30px;
+  width: 25px;
   height: 120px;
   border-radius: 0 0 3px 3px;
   border : 3px solid #444;
