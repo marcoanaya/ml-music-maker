@@ -62,7 +62,7 @@ export default function App(): ReactElement {
   };
 
   const handleUpdateInstrument: Handlers.UpdateInstrument = (instrument) =>
-    setTrack((prev) => prev.setInstrument(instrument));
+    setTrack((prev) => prev.setInstrument(instrument).append());
 
   const handleUpdateSelected: Handlers.UpdateSelected = (id) =>
     setTrack((prev) => prev.setSelected(id));

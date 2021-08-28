@@ -35,7 +35,12 @@ export const Maker: React.FC<MakerProps> = ({
           )}
           <ul>
             {instruments.map((instrument) => (
-              <li key={instrument}>{instrument}</li>
+              <li
+                key={instrument}
+                onClick={() => handleUpdateInstrument(instrument)}
+              >
+                {instrument}
+              </li>
             ))}
           </ul>
         </div>

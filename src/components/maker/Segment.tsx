@@ -6,7 +6,7 @@ import { instruments } from '../audio/constants';
 import { Handlers, Instrument } from '../../global';
 import './maker.css';
 
-const SEGMENT_WIDTH = 20;
+const SEGMENT_WIDTH = 30;
 
 export type Segment = {
   start: number;
